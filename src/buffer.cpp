@@ -1,24 +1,21 @@
 #include"buffer.hpp"
 
-void Stack::push(const Buffer& buffer){
-    buffer_[index_].undo_=buffer.undo_;
-    buffer_[index_].redo_=buffer.redo_;
-    if((++index_)>10) index_=0;
-}
+// void BUFFER::push(const std::vector<Pixel>& undo, const std::vector<Pixel>& redo){
+//     BUFFER::undo_[BUFFER::u_index]=undo;
+//     BUFFER::redo_[BUFFER::r_index]=redo;
+// }
 
-void Stack::push(const std::vector<Pixel>& undo, const std::vector<Pixel>& redo){
-    buffer_[index_].undo_=undo;
-    buffer_[index_].redo_=redo;
-    if((++index_)>10) index_=0;
-}
+// void BUFFER::push(bool type, const std::vector<Pixel>& buffer){
+//     if(type==UNDO) BUFFER::undo_[BUFFER::u_index]=buffer;
+//     else if(type==REDO) BUFFER::redo_[BUFFER::r_index]=buffer;    
+// }
 
-void Stack::push(const std::vector<Pixel>& unre_do){
-    buffer_[index_].undo_=unre_do;
-    buffer_[index_].redo_=unre_do;
-    if((++index_)>10) index_=0;
-}
+// void BUFFER::push(const std::vector<Pixel>& unre_do){
+//     BUFFER::undo_[BUFFER::u_index]=unre_do;
+//     BUFFER::redo_[BUFFER::r_index]=unre_do;
+// }
 
-void Stack::pop(){
-    buffer_[index_].undo_.clear();
-    --index_;
-}
+// void BUFFER::pop(bool type){
+//     if(type==UNDO) undo_[u_index].clear();
+//     else if(type==REDO) redo_[r_index].clear();
+// }

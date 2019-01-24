@@ -1,20 +1,25 @@
+/*
+ * Buffer to hold logs or recent events in order to remove or back up.
+ * Has maximum size of 10 undo and 10 redo operations.
+*/
 
 #pragma once
 
 #include<vector>
 #include"pixel.hpp"
 
-struct Buffer{
-    std::vector<Pixel> undo_;
-    std::vector<Pixel> redo_;
-};
+#define UNDO 0
+#define REDO 1
 
-struct Stack{
-    Buffer buffer_[10];
-    unsigned index_;
+struct BUFFER{
+    private:
+    static std::vector<Pixel> undo_[10];
+    static std::vector<Pixel> redo_[10];
+    static unsigned u_index, r_index;
 
-    void push(const Buffer& buffer);
-    void push(const std::vector<Pixel>& undo, const std::vector<Pixel>& redo);
-    void push(const std::vector<Pixel>& unre_do);
-    void pop();
+    public:
+    static void push(const std::vector<Pixel>& undo, const std::vector<Pixel>& redo);
+    static void push(bool type, const std::vector<Pixel>& buffer);
+    static void push(const std::vector<Pixel>& unre_do);
+    static void pop(bool type);
 };

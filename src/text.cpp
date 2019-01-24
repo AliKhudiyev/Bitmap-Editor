@@ -464,3 +464,4 @@ void TEXT::init(unsigned font_type){
 }
 
 TEXT __Font_Standard;
+TEXT __Font_Classic(CLASSIC_FONT);

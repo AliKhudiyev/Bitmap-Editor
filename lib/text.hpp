@@ -1,3 +1,7 @@
+/*
+ * Text header file is to processing basic characters.
+ * There are 2 built-in font options.
+*/
 
 #pragma once
 

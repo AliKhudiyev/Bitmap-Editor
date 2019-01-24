@@ -399,7 +399,6 @@ const Shape __z(std::vector<Pixel>{
 
 void TEXT::magnify(double f){
     for(unsigned i=0;i<26;++i){
-        // std::cout<<"magnifying.. x"<<f<<"\n";
         for(unsigned n=0;n<Char_[i].n_side();++n){
             Char_[i].get_pixel(n).get_position().mult_x(f);
             Char_[i].get_pixel(n).get_position().mult_y(f);
@@ -421,10 +420,6 @@ void TEXT::rotate(angle_t angle){
 void TEXT::rotate(unsigned index, angle_t angle){
     ;
 }
-
-// const Shape& Text::operator[](unsigned i) const{
-//     return char_[i];
-// }
 
 void TEXT::init(unsigned font_type){
     if(font_type){}

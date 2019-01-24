@@ -1,0 +1,5 @@
+/examples
+/pictures
+/processed
+*.bmp
+*.o

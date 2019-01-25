@@ -42,7 +42,7 @@ BMP BMP::blank(unsigned width, unsigned height, const Color& color){
 }
 
 BMP& BMP::draw_point(const Position2D& position, const Color& color, const thickness_t thickness){
-    ;
+    // draw_circle(position, 1);
     return *this;
 }
 
@@ -94,12 +94,14 @@ BMP& BMP::draw_rectangle(const Rectangle& rectangle, const Color& color, const t
 }
 
 BMP& BMP::draw_circle(const Position2D& position1, const Position2D& position2, const Color& color, const thickness_t thickness){
+    // Position2D center=position1-position2;
+    // unsigned radius=Position2D::length(position1, position2);
     ;
     return *this;
 }
 
 BMP& BMP::draw_circle(const Position2D position[2], const Color& color, const thickness_t thickness){
-    ;
+    // draw_circle(position[0], position[1], color, thickness);
     return *this;
 }
 
@@ -144,6 +146,11 @@ BMP& BMP::draw_text(const std::string& text, const Position2D& position, double 
         x+=tmp.width()+6;
         draw_shape(tmp);
     }
+    return *this;
+}
+
+BMP& BMP::draw_function(const std::string& function, const Color& color, const thickness_t thickness){
+    ;
     return *this;
 }
 
@@ -319,26 +326,24 @@ bool BMP::draw(const Position2D position[2], const Color& color, const thickness
     // std::cout<<"k : "<<k<<'\n';
     // std::cout<<"pass : "<<pass<<'\n';
     // std::cout<<"abs(k) : "<<(position_t)abs(k)<<'\n';
-    
-    for(position_t x=0;x<=delta-(int)pass;++x){
+    // std::cout<<std::endl;
+
+    for(position_t x=0;x<=delta;++x){
         y_shift=floor((double)x*k);
         if(pass) y_shift=1;
         if(x && abs(k>0?ceil(k) : floor(k))>1){
-            for(position_t ry=1;ry<(position_t)(abs(k))+1;++ry){
+            for(position_t ry=1;ry<(position_t)(abs(k>0?ceil(k) : floor(k)));++ry){
                 if(k>0) *(cit+ry*width)=color;
                 else *(cit-ry*width)=color;
             }
         }
-        // std::cout<<"\t:abs y shift : "<<abs(y_shift)<<'\n';
         if(y_shift>0 && k) cit=c_cit+abs(y_shift)*width;
-        else if(y_shift>0) cit+=width;
+        else if(y_shift>0 && x) cit+=width;
         else if(y_shift<0 && k) cit=c_cit-abs(y_shift)*width;
-        // else if(y_shift<0) cit-=width;
 
-        if(!pass && y_shift) cit+=x;
+        if(!pass && y_shift && x) cit+=x;
         else if(!pass && x) ++cit;
         *cit=color;
-        // std::cout<<':'<<x<<'\n';
     }
     if(thickness-1){
         Position2D post[2]{position[0], position[1]};
@@ -433,31 +438,33 @@ BMP& BMP::h_scale(double factor, unsigned height, unsigned dh){
 
 BMP& BMP::v_crop(unsigned width){
     double crop_size=(double)(info_.width_-width)/2;
-
+    unsigned height=0xffffffff-info_.height_;
+    std::cout<<"v crop size : "<<crop_size<<'\n';
     info_.width_=width;
-    info_.image_size_=width*(0xffffffff-info_.height_)*4;
+    info_.image_size_=width*(height+1)*4;
     info_.file_size_=info_.image_size_+info_.offset_size_;
     update();
 
     auto it=table_.color_.begin()+floor(crop_size);
-    unsigned height=0xffffffff-info_.height_;
     std::vector<Color> color(info_.image_size_/4);
     auto cit=color.begin();
 
     for(auto c_it=it;it<c_it+width;++it, ++cit) *cit=*it;
     for(unsigned h=1;h<height;++h){
-        it+=2*crop_size;
+        it+=(floor(crop_size)+ceil(crop_size));
         for(auto c_it=it;it<c_it+width;++it, ++cit) *cit=*it;
     }
+    // for(auto c_it=it;it<c_it+width;++it, ++cit) *cit=*it;
     table_.color_=color;    
 
     return *this;
 }
 
 BMP& BMP::h_crop(unsigned height){
-    double crop_size=(0xffffffff-height)/2;
+    double crop_size=(double)(0xffffffff-info_.height_+1-height)/2.0;
+    std::cout<<"h crop size : "<<crop_size<<'\n';
 
-    info_.height_=0xffffffff-height;
+    info_.height_=0xffffffff-height+1;
     info_.image_size_=info_.width_*height*4;
     info_.file_size_=info_.image_size_+info_.offset_size_;
     update();

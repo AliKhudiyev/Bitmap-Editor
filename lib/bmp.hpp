@@ -41,9 +41,11 @@ class BMP{
     BMP& draw_circle(const Position2D& position1, const Position2D& position2, const Color& color=def_color, const thickness_t thickness=def_thick);
     BMP& draw_circle(const Position2D position[2], const Color& color=def_color, const thickness_t thickness=BMP::def_thick);
     BMP& draw_circle(const Circle& circle, const Color& color=def_color, const thickness_t thickness=def_thick);
+    BMP& draw_circle(const Position2D& position, unsigned radius, const Color& color=def_color, const thickness_t thickness=def_thick);
     BMP& draw_shape(const Shape& shape, const Color& color=def_color, const thickness_t thickness=def_thick);
     BMP& draw(const std::vector<Position2D>& positions, const Color& color=def_color, const thickness_t thickness=def_thick);
     BMP& draw_text(const std::string& text, const Position2D& position, double magnify=1, const Color& color=def_color, const thickness_t thickness=def_thick);
+    BMP& draw_function(const std::string& function, const Color& color=def_color, const thickness_t thickness=def_thick);
 
     BMP& detect_borders();
     BMP& scale(double on_axis=1);

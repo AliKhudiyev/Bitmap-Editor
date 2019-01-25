@@ -34,14 +34,20 @@ int main(int argc, char *argv[])
     BMP canvas=BMP::blank(720, 720, COLOR::Green);    
     canvas.set_color(COLOR::Aqua);
     for(unsigned i=0;i<71;++i){
-        // canvas.draw_line(Position2D(360, 360), Position2D(10, 10+i*10));
-        // canvas.draw_line(Position2D(360, 360), Position2D(710, 10+i*10));
+        canvas.draw_line(Position2D(360, 360), Position2D(10, 10+i*10));
+        canvas.draw_line(Position2D(360, 360), Position2D(709, 10+i*10));
 
-        // canvas.draw_line(Position2D(360, 360), Position2D(10+i*10, 10));
-        // canvas.draw_line(Position2D(360, 360), Position2D(10+i*10, 710));        
+        canvas.draw_line(Position2D(360, 360), Position2D(10+i*10, 10));
+        canvas.draw_line(Position2D(360, 360), Position2D(10+i*10, 709));
     }
     canvas.draw_text("hello ali 0123456789", Position2D(50, 50));
     canvas.draw_text("i think everythink is good", Position2D(330, 350));
+
+    canvas.draw_line(Position2D(0, 0), Position2D(719, 0));
+    canvas.draw_line(Position2D(1, 719), Position2D(719, 719));
+    canvas.draw_line(Position2D(0, 0), Position2D(0, 719));
+    canvas.draw_line(Position2D(719, 1), Position2D(719, 719));
+
     canvas.save("canvas.bmp");
 
     return 0;

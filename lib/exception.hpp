@@ -7,6 +7,7 @@
 enum Error{
     Default=0,
     Light,
+    File,
     Fatal,
     Memory,
     Logic,
@@ -28,6 +29,9 @@ class Exception: public std::exception{
             case Error::Light:
                 msg_="Light Error: "+msg;
                 msg_+="\tInitializing default values to continue..";
+                break;
+            case Error::File:
+                msg_="File Error: "+msg;
                 break;
             case Error::Fatal:
                 msg_="Fatal Error: "+msg;

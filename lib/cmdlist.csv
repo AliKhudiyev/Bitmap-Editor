@@ -1,27 +1,27 @@
 Command            ,Parameter 1        ,Parameter 2        ,Parameter 3        ,Parameter 5
-
-save               ,[image name]
-load               ,[image name]
-quit
-remove
-create canvas      ,[width]            ,[height]           ,[/(r g b)]
-show ruler         ,[/ruler size]
-hide ruler
-detect borders
-crop               ,[(x1 y1)]          ,[(x2 y2)]
-vertical cut       ,[width]
-horizontal cut     ,[height]
-rotate             ,[angle]
-scale              ,[on x]             ,[on y]
-draw point         ,[(x y)]
-draw line          ,[(x1 y1)]          ,[(x2 y2)]
-draw triangle      ,[(x1 y2)]          ,[(x2 y2)]          ,[(x3 y3)]
-draw circle        ,[(x y)]            ,[radius]
-draw text          ,[text]
-draw function      ,[variable]         ,[function]
+,,,,
+save               ,[image name],,,
+load               ,[image name],,,
+quit,,,,
+remove,,,,
+create canvas      ,[width]            ,[height]           ,[/(r g b)],
+show ruler         ,[/ruler size],,,
+hide ruler,,,,
+detect borders,,,,
+crop               ,[(x1 y1)]          ,[(x2 y2)],,
+vertical cut       ,[width],,,
+horizontal cut     ,[height],,,
+rotate             ,[angle],,,
+scale              ,[on x]             ,[on y],,
+draw point         ,[(x y)],,,
+draw line          ,[(x1 y1)]          ,[(x2 y2)],,
+draw triangle      ,[(x1 y2)]          ,[(x2 y2)]          ,[(x3 y3)],
+draw circle        ,[(x y)]            ,[radius],,
+draw text          ,[text]             ,[(x y)],,
+draw function      ,[variable]         ,[function],,
 set color          ,[r]                ,[g]                ,[b]                ,[/opacity]
-set thickness      ,[thickness]
-set fill           ,[0/1]
-magnify            ,[factor]
-undo
-redo
+set thickness      ,[thickness],,,
+set fill           ,[0/1],,,
+magnify            ,[factor],,,
+undo,,,,
+redo,,,,

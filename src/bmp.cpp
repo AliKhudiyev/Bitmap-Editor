@@ -252,7 +252,7 @@ void BMP::read(const std::string& file_name){
 
     unsigned Bpp=info_.bits_per_pixel_/8;
     info_.image_size_=info_.file_size_-info_.offset_size_;
-    info_.height_=0xffffffff-info_.image_size_/info_.width_/Bpp;
+    info_.height_=0xffffffff-info_.image_size_/info_.width_/Bpp+1;
 
     try{
         header_.resize(info_.offset_size_);

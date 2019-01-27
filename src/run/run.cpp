@@ -68,25 +68,26 @@ int main(int argc, char const *argv[])
                 size_t pos=commands[index].size();
                 string param_list=command.substr(pos, command.size()-pos);
                 cout<<param_list<<" - "<<'\n';
-                if(index==6){
+                if(index==6){   // save
                     params=process(" `", param_list);
-                } else if(index<=16){
-                    ;
-                } else if(index<=21){
+                } else if(index==22){   // create canvas
+                    params=process("[ % ]", param_list);
+                } else if(index==18){   // draw line
+                    params=process("[ % ]%[ % ]", command);
+                } else if(index==20){   // draw text
                     params=process("~~%[ % ]", command);
-                } else if(index<=24){
-                    ;
                 }
 
                 cout<<"\tchild\n";
                 cout<<"\tindex : "<<index<<'\n';
 
-                char* args[3];
-                args[0]=(char*)"./tell";
-                for(unsigned i=1;i<2;++i){
+                char* args[10];
+                args[0]=(char*)"./main";
+                args[1]=(char*)&to_string(-1*index)[0];
+                for(unsigned i=1;i<=params.size();++i){
                     cout<<"init : "<<params[i-1]<<'\n';
-                    args[i]=(char*)&(params[i-1][0]);
-                }   args[2]=(char*)NULL;
+                    args[i+1]=(char*)&(params[i-1][0]);
+                }   args[2+params.size()]=(char*)NULL;
                 execvp(args[0], args);
                 exit(0);
             }

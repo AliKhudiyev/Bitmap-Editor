@@ -16,34 +16,31 @@ using namespace std;
 extern int input(int argc, char** argv);
 void check(int argc, char** argv);
 
+/*
+argv[1] - the command index
+argv[2] ... argv[argc-7] - the command parameters
+argv[argc-6] ... argv[argc-4] - the color parameter given with unsigned r, g and b
+argv[argc-3] - the thickness parameter given with unsigned t
+argv[argc-2] - the magnify parameter given with double f
+argv[argc-1] - the image name given with string
+*/
+
 int main(int argc, char *argv[])
 {
-    
-    // try{
-    //     check(argc, argv);
-    // } catch(const Exception& exception){
-    //     cout<<exception.what()<<'\n';
-    // }
-
-    Shape shape(vector<Position2D>{
-        Position2D(150, 150), Position2D(570, 150),
-        Position2D(570, 570), Position2D(150, 570),
-        Position2D(150, 150), Position2D(570, 570)
-    });
-
-    BMP canvas=BMP::blank(720, 720, COLOR::Green);    
-    canvas.set_color(COLOR::Aqua);
-    for(unsigned i=0;i<71;++i){
-        // canvas.draw_line(Position2D(360, 360), Position2D(10, 10+i*10));
-        // canvas.draw_line(Position2D(360, 360), Position2D(709, 10+i*10));
-
-        // canvas.draw_line(Position2D(360, 360), Position2D(10+i*10, 10));
-        // canvas.draw_line(Position2D(360, 360), Position2D(10+i*10, 709));
+    BMP image;
+    image.load("mtp.bmp");
+    if(strcmp(argv[1], "-22")==0){  // create canvas
+        image=BMP::blank(atoi(argv[2]), atoi(argv[3]));
+    } else if(strcmp(argv[1], "-18")==0){     // draw line
+        cout<<"Drawing line positions : ("<<atoi(argv[2])<<", "<<atoi(argv[3])<<"), (";
+        // cout<<atoi(argv[4])<<", "<<atoi(argv[5])<<")\n";
+        image.draw_line(Position2D(atoi(argv[2]), atoi(argv[3])), Position2D(atoi(argv[4]), atoi(argv[5])));
+    } else if(strcmp(argv[1], "-20")==0){   // draw text
+        image.draw_text(argv[2], Position2D(atoi(argv[3]), atoi(argv[4])));
+    } else if(0){
+        ;
     }
-    canvas.draw_text("hello ali 0123456789", Position2D(50, 50));
-    canvas.draw_text("i think everythink is good", Position2D(330, 350));
-
-    canvas.save("canvas.bmp");
+    image.save("mtp.bmp");
 
     return 0;
 }

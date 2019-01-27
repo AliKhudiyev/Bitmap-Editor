@@ -1,47 +1,35 @@
 #!/bin/bash
 
-echo "Welcome"
-read -p 'Is there any image to be processed [y/n]? ' ans
+echo "Welcome to the Bitmap Editor V1.0."
 
-if [ "y" == "$ans" ]
+echo "Used programming languages : C, C++(17)"
+echo "Current available version : 1.0."
+echo "Written by : Ali Khudiyev"
+echo "Simple terminal based image editor"
+echo "Needed bash/shell version : Bash"
+echo "25 user-frinedly commands"
+echo "2 processing modes : S.T.P. and M.T.P."
+echo "Various error handlings and brief information for each of them"
+echo
+echo "Note: If any bugs are found feel free to open up a new issue in my github"
+echo "Note: For more detailed information about the program visit https://github.com/AliKhudiyev/Bitmap-Editor"
+echo
+
+sleep 5s
+
+echo "Which mode do you want to enter? 0/1"
+echo "0 - Single-Time Processing or S.T.P."
+echo "1 - Multi-Time Processing or M.T.P."
+read mode
+
+if [ $mode == 0 ]
 then
-    alert=0
-    while [ $alert -lt 3 ]
-    do
-        read -p 'Then please enter the folder which image is in: ' folder
-        if [ ! -d $folder ]
-        then
-            echo "There is no such a folder. Try again."
-            echo "Do not forget to write the full path!"
-            echo
-            ((++alert))
-        else
-            echo "Okay."
-            alert=5
-        fi
-    done
-    if [ $alert -eq 5 ]
-    then
-        echo "Waiting for the program response, please be patient."
-        count=0
-        while [ $count -lt 10 ]
-        do
-            printf '. '
-            sleep 1s
-            ((++count))
-        done
-        echo "verified"
-    else
-        echo "Input buffer filled. Exiting the program!"
-    fi
+    echo "S.T.P. mode has been selected."
+    ./STPmode.sh
+elif [ $mode == 1 ]
+then
+    echo "M.T.P. mode has been selected."
+    ./MTPmode.sh
 else
-    echo "Waiting for the program response, please be patient."
-    count=0
-    while [ $count -lt 10 ]
-    do
-        printf '. '
-        sleep 1s
-        ((++count))
-    done
-    echo "no"
+    echo "No such an option. Quit code has been activated."
 fi

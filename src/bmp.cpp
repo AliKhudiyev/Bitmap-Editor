@@ -144,7 +144,7 @@ BMP& BMP::draw_text(const std::string& text, const Position2D& position, double 
         tmp=__Font_Standard.Char_[(int)text[i]-33];
         tmp.add_xy(x, y);
         x+=tmp.width()+6;
-        draw_shape(tmp);
+        draw_shape(tmp, color, thickness);
     }
     return *this;
 }

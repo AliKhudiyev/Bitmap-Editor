@@ -7,6 +7,8 @@
 #include<sys/wait.h>
 #include<string.h>
 
+#define MAX_N_CHARS 30
+
 using namespace std;
 
 using cmd_t=int;
@@ -52,26 +54,27 @@ vector<string> process(const std::string& proc, const std::string& text);
 int main(int argc, char const *argv[])
 {
     pid_t pid;
-    r=(char*)mmap(NULL, 3, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
-    g=(char*)mmap(NULL, 3, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
-    b=(char*)mmap(NULL, 3, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
-    thickness=(char*)mmap(NULL, 2, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
-    magnify=(char*)mmap(NULL, 2, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
-    image_name=(char*)mmap(NULL, 30, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    r=(char*)mmap(NULL, sizeof(char), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    g=(char*)mmap(NULL, sizeof(char), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    b=(char*)mmap(NULL, sizeof(char), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    thickness=(char*)mmap(NULL, sizeof(char), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    magnify=(char*)mmap(NULL, sizeof(char), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    image_name=(char*)mmap(NULL, MAX_N_CHARS*sizeof(char), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 
     cout<<"The program has been started.\n";
 
-    r[0]='0';
-    g[0]='0';
-    b[0]='0';
-    thickness[0]='1';
-    magnify[0]='1';
+    *r='0';
+    *g='0';
+    *b='0';
+    *thickness='1';
+    *magnify='1';
     image_name[0]='\0';
 
-    std::cout<<"forking..\n";
-    bool pass=true;
+    bool STPmode=atoi(argv[1]);
+    std::cout<<"STP mode : "<<STPmode<<'\n';
+    bool proc=true;
 
-    for(;pass;){
+    while(proc){
         pid=fork();
         switch(pid){
             case -1:
@@ -81,11 +84,8 @@ int main(int argc, char const *argv[])
             {
                 string command;
                 cmd_t index=-1;
-                // string r="0", g="0", b="0";
-                // string thickness="1";
-                // string magnify="1";
-                // string image_name="";
 
+                cout<<"Command : ";
                 getline(cin, command);
                 for(cmd_t in=0;in<25;++in){
                     if(commands[in]==command.substr(0, commands[in].size())){
@@ -96,10 +96,6 @@ int main(int argc, char const *argv[])
                 vector<string> params;
                 size_t pos=commands[index].size();
                 string param_list=command.substr(pos, command.size()-pos);
-                cout<<"Parameter list : "<<param_list<<'\n';
-                
-                cout<<"\tchild\n";
-                cout<<"\tindex : "<<index<<'\n';
 
                 if(index==0){               // quit
                     exit(1);
@@ -115,7 +111,6 @@ int main(int argc, char const *argv[])
                     ;
                 } else if(index==6){        // save
                     params=process(" `", param_list);
-                    strcpy(image_name, (char*)&params[0][0]);
                 } else if(index==7){        // load
                     params=process(" `", param_list);
                     // image_name=(char*)&params[0][0];
@@ -136,10 +131,7 @@ int main(int argc, char const *argv[])
                     params=process(" `", param_list);
                     strcpy(thickness, (char*)&params[0][0]);
                 } else if(index==15){       // set fill
-                    params=process("[  ]", param_list);
-                    strcpy(r, (char*)&params[0][0]);
-                    strcpy(g, (char*)&params[1][0]);
-                    strcpy(b, (char*)&params[2][0]);
+                    ;
                 } else if(index==16){       // magnify
                     params=process(" `", param_list);
                     strcpy(magnify, (char*)&params[0][0]);
@@ -153,32 +145,34 @@ int main(int argc, char const *argv[])
                     params=process("''%[ ]", param_list);
                 } else if(index==21){
                     ;
-                } else if(index==22){
-                    ;
+                } else if(index==22){       // create canvas
+                    params=process("[ ]", param_list);
+                    image_name[0]='\0';
                 } else if(index==23){
                     ;
-                } else if(index==24){
-                    ;
+                } else if(index==24){       // set color
+                    params=process("[  ]", param_list);
+                    strcpy(r, (char*)&params[0][0]);
+                    strcpy(g, (char*)&params[1][0]);
+                    strcpy(b, (char*)&params[2][0]);
                 }
 
                 // preparing to call execvp
                 char* args[30];
                 args[0]=(char*)"./main";
-                args[1]=(char*)&to_string(-1*index)[0];
+                args[1]=(char*)&to_string(-index)[0];
                 for(unsigned i=1;i<=params.size();++i){
                     cout<<"init : "<<params[i-1]<<'\n';
                     args[i+1]=(char*)&(params[i-1][0]);
                 }
                 unsigned in=2+params.size();
-                args[in++]=(char*)&r[0];
-                args[in++]=(char*)&g[0];
-                args[in++]=(char*)&b[0];
-                args[in++]=(char*)&thickness[0];
-                args[in++]=(char*)&magnify[0];
+                args[in++]=(char*)r;
+                args[in++]=(char*)g;
+                args[in++]=(char*)b;
+                args[in++]=(char*)thickness;
+                args[in++]=(char*)magnify;
                 args[in++]=(char*)&image_name[0];
                 args[in++]=(char*)NULL;
-                
-                cout<<"current image name : "<<image_name[0]<<image_name[1]<<image_name[2]<<"...\n";
 
                 execvp(args[0], args);
                 exit(0);
@@ -189,9 +183,9 @@ int main(int argc, char const *argv[])
                 int why;
                 wait(&why);
                 int stat=WEXITSTATUS(why);
-                if(stat==1) pass=false;
+                if(stat==1 || STPmode) proc=false;
                 if(stat==0){
-                    cout<<"parent pid : "<<getppid()<<"\n";
+                    cout<<"parent pid : "<<getppid()<<"\n\n";
                 }
                 break;
             }

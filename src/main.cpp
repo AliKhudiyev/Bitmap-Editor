@@ -38,7 +38,10 @@ int main(int argc, char *argv[])
     BMP image;
     
     if(!image_name.empty()) image.load(image_name);
-    else image_name="__tmp_img_01.bmp";
+    else{
+        cout<<"tmp image name has been selected.\n";
+        image_name="__tmp_img_01.bmp";
+    }
 
     if(strcmp(argv[1], "-0")==0){               // quit
         ;   // nothing to do for now

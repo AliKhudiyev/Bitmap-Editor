@@ -110,6 +110,11 @@ BMP& BMP::draw_circle(const Circle& circle, const Color& color, const thickness_
     return *this;
 }
 
+BMP& BMP::draw_circle(const Position2D& position, unsigned radius, const Color& color, const thickness_t thickness){
+    ;
+    return *this;
+}
+    
 BMP& BMP::draw_shape(const Shape& shape, const Color& color, const thickness_t thickness){
     std::vector<Position2D>::size_type i;
     for(i=0;i<shape.n_side();++i){
@@ -188,6 +193,8 @@ BMP& BMP::rotate(angle_t angle){
 }
 
 BMP& BMP::crop(unsigned width, unsigned height){
+    if(width==0) width=info_.width_;
+    if(height==0) height=0xffffffff-info_.height_+1;
     return v_crop(width).h_crop(height);
 }
 

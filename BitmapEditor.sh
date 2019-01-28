@@ -29,6 +29,7 @@ then
 elif [ $mode == 1 ]
 then
     echo "M.T.P. mode has been selected."
+    echo
     ./MTPmode.sh
 else
     echo "No such an option. Quit code has been activated."

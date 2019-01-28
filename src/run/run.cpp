@@ -117,12 +117,12 @@ int main(int argc, char const *argv[])
                     strcpy(image_name, (char*)&params[0][0]);
                 } else if(index==8){
                     ;
-                } else if(index==9){
-                    ;
-                } else if(index==10){
-                    ;
-                } else if(index==11){
-                    ;
+                } else if(index==9){        // crop
+                    params=process("[ ]", param_list);
+                } else if(index==10){       // horizontal crop
+                    params=process(" `", param_list);
+                } else if(index==11){       // vertical crop
+                    params=process(" `", param_list);
                 } else if(index==12){
                     ;
                 } else if(index==13){
@@ -135,8 +135,8 @@ int main(int argc, char const *argv[])
                 } else if(index==16){       // magnify
                     params=process(" `", param_list);
                     strcpy(magnify, (char*)&params[0][0]);
-                } else if(index==17){
-                    ;
+                } else if(index==17){       // scale
+                    params=process("[ ]", param_list);
                 } else if(index==18){       // draw line
                     params=process("[ ]%[ ]", param_list);
                 } else if(index==19){
@@ -148,13 +148,15 @@ int main(int argc, char const *argv[])
                 } else if(index==22){       // create canvas
                     params=process("[ ]", param_list);
                     image_name[0]='\0';
-                } else if(index==23){
-                    ;
+                } else if(index==23){       // draw triangle
+                    params=process("[ ]%[ ]%[ ]", param_list);
                 } else if(index==24){       // set color
                     params=process("[  ]", param_list);
                     strcpy(r, (char*)&params[0][0]);
                     strcpy(g, (char*)&params[1][0]);
                     strcpy(b, (char*)&params[2][0]);
+                } else{                     // ERR: no such a command
+                    exit(1);
                 }
 
                 // preparing to call execvp
@@ -184,9 +186,6 @@ int main(int argc, char const *argv[])
                 wait(&why);
                 int stat=WEXITSTATUS(why);
                 if(stat==1 || STPmode) proc=false;
-                if(stat==0){
-                    cout<<"parent pid : "<<getppid()<<"\n\n";
-                }
                 break;
             }
         }

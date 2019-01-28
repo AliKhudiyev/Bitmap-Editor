@@ -4,6 +4,7 @@ echo "Multi-Time Processing or Live Processing is to process an image under the 
 echo "Current version : 1.0"
 
 echo "Starting the program."
+echo
 
 ./run "0"
 

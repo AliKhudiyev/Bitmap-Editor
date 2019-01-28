@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
     }
 
     if(strcmp(argv[1], "-0")==0){               // quit
-        ;   // nothing to do for now
+        ;   // nothing to do here
     } else if(strcmp(argv[1], "-1")==0){        // remove
         ;
     } else if(strcmp(argv[1], "-2")==0){        // detect borders
@@ -58,31 +58,32 @@ int main(int argc, char *argv[])
     } else if(strcmp(argv[1], "-6")==0){        // save
         image_name=argv[2];
     } else if(strcmp(argv[1], "-7")==0){        // load
-        ;   // nothing to do for now
+        ;   // nothing to do here
     } else if(strcmp(argv[1], "-8")==0){        // show ruler
         ;   // isn't prepared
     } else if(strcmp(argv[1], "-9")==0){        // crop
-        ;
+        image.crop(STR2LEN(argv[2]), STR2LEN(argv[3]));
     } else if(strcmp(argv[1], "-10")==0){       // horizontal cut
-        ;
+        image.crop(0, STR2LEN(argv[2]));
     } else if(strcmp(argv[1], "-11")==0){       // vertical cut
-        ;
+        image.crop(STR2LEN(argv[2]), 0);
     } else if(strcmp(argv[1], "-12")==0){       // rotate
         ;   // isn't prepared
     } else if(strcmp(argv[1], "-13")==0){       // draw point
         ;   // isn't prepared
     } else if(strcmp(argv[1], "-14")==0){       // set thickness
-        ;   // nothing to do for now
+        ;   // nothing to do here
     } else if(strcmp(argv[1], "-15")==0){       // set fill
-        ;   // nothing to do for now
+        ;   // nothing to do here
     } else if(strcmp(argv[1], "-16")==0){       // magnify
-        ;   // nothing to do for now
+        ;   // nothing to do here
     } else if(strcmp(argv[1], "-17")==0){       // scale
-        ;
+        image.scale(atof(argv[2]), atof(argv[3]));
     } else if(strcmp(argv[1], "-18")==0){       // draw line
         image.draw_line(STR2POS(argv[2],argv[3]), STR2POS(argv[4],argv[5]), color, thickness);
     } else if(strcmp(argv[1], "-19")==0){       // draw circle
         ;   // isn't prepared
+        image.draw_circle(STR2POS(argv[2], argv[3]), STR2LEN(argv[4]), color, thickness);
     } else if(strcmp(argv[1], "-20")==0){       // draw text
         image.draw_text(argv[2], STR2POS(argv[3],argv[4]), magnify, color, thickness);
     } else if(strcmp(argv[1], "-21")==0){       // draw function
@@ -90,9 +91,9 @@ int main(int argc, char *argv[])
     } else if(strcmp(argv[1], "-22")==0){       // create canvas
         image=BMP::blank(STR2LEN(argv[2]), STR2LEN(argv[3]), color);
     } else if(strcmp(argv[1], "-23")==0){       // draw triangle
-        ;
+        image.draw(vector<Position2D>{STR2POS(argv[2],argv[3]), STR2POS(argv[4],argv[5]), STR2POS(argv[6],argv[7]), STR2POS(argv[2],argv[3])}, color, thickness);
     } else if(strcmp(argv[1], "-24")==0){       // set color
-        ;   // nothing to do for now
+        ;   // nothing to do here
     }
     
     image.save(image_name);

@@ -14,9 +14,12 @@ using namespace std;
 using cmd_t=int;
 
 static char *r, *g, *b;
-static char *thickness;
-static char *magnify;
-static char *image_name;
+static char* thickness;
+static char* magnify;
+static char* filler;
+static char* image_name;
+
+static bool* is_in_commander;
 
 const string commands[25]{
     "quit",
@@ -30,8 +33,8 @@ const string commands[25]{
     "load",
     "show ruler",
     "crop",
-    "horizontal cut",
-    "vertical cut",
+    "horizontal crop",
+    "vertical crop",
     "rotate",
     "draw point",
     "set thickness",
@@ -50,6 +53,8 @@ const string commands[25]{
 };
 
 vector<string> process(const std::string& proc, const std::string& text);
+cmd_t get_help(const std::string& command);
+size_t matched_length(const std::string& cmd, const std::string& command);
 
 int main(int argc, char const *argv[])
 {
@@ -59,7 +64,10 @@ int main(int argc, char const *argv[])
     b=(char*)mmap(NULL, sizeof(char), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
     thickness=(char*)mmap(NULL, sizeof(char), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
     magnify=(char*)mmap(NULL, sizeof(char), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    filler=(char*)mmap(NULL, sizeof(char), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
     image_name=(char*)mmap(NULL, MAX_N_CHARS*sizeof(char), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+
+    is_in_commander=(bool*)mmap(NULL, sizeof(bool), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 
     cout<<"The program has been started.\n";
 
@@ -68,8 +76,10 @@ int main(int argc, char const *argv[])
     *b='0';
     *thickness='1';
     *magnify='1';
+    *filler='0';
     image_name[0]='\0';
 
+    *is_in_commander=false;
     bool STPmode=atoi(argv[1]);
     std::cout<<"STP mode : "<<STPmode<<'\n';
     bool proc=true;
@@ -93,21 +103,47 @@ int main(int argc, char const *argv[])
                         break;
                     }
                 }
+                if(index==-1){                     // ERR: no such a command
+                    cout<<"No such a command!\n";
+                    if(!*is_in_commander){
+                        char c;
+                        cout<<"Do you want to get commander help? [y/n] ";
+                        cin>>c;
+                        if(c=='y') *is_in_commander=true;
+                    }
+                    if(*is_in_commander){
+                        index=get_help(command);
+                    }
+                    if(index==-1){
+                        cout<<" :( Couldn't find an appropriate command.\n";
+                        exit(1);
+                    }
+                    cout<<"Command has been changed to : "<<commands[index]<<'\n';
+                    cout<<"Please enter the appropriate parameter(s) now: ";
+                    string param;
+                    cin>>param;
+                    command+=(" "+param);
+                }
+
                 vector<string> params;
                 size_t pos=commands[index].size();
                 string param_list=command.substr(pos, command.size()-pos);
 
                 if(index==0){               // quit
                     exit(1);
-                } else if(index==1){
+                } else if(index==1){        // remove
+                    strcpy(r, "255");
+                    strcpy(g, "255");
+                    strcpy(b, "255");
+                    strcpy(thickness, "1");
+                    strcpy(magnify, "1");
+                } else if(index==2){        // detect borders
                     ;
-                } else if(index==2){
+                } else if(index==3){        // undo
                     ;
-                } else if(index==3){
+                } else if(index==4){        // redo
                     ;
-                } else if(index==4){
-                    ;
-                } else if(index==5){
+                } else if(index==5){        // hide ruler
                     ;
                 } else if(index==6){        // save
                     params=process(" `", param_list);
@@ -123,15 +159,16 @@ int main(int argc, char const *argv[])
                     params=process(" `", param_list);
                 } else if(index==11){       // vertical crop
                     params=process(" `", param_list);
-                } else if(index==12){
-                    ;
-                } else if(index==13){
-                    ;
+                } else if(index==12){       // rotate
+                    params=process(" `", param_list);
+                } else if(index==13){       // draw point
+                    params=process("[ ]", param_list);
                 } else if(index==14){       // set thickness
                     params=process(" `", param_list);
                     strcpy(thickness, (char*)&params[0][0]);
                 } else if(index==15){       // set fill
-                    ;
+                    params=process(" `", param_list);
+                    strcpy(filler, (char*)&params[0][0]);
                 } else if(index==16){       // magnify
                     params=process(" `", param_list);
                     strcpy(magnify, (char*)&params[0][0]);
@@ -139,12 +176,12 @@ int main(int argc, char const *argv[])
                     params=process("[ ]", param_list);
                 } else if(index==18){       // draw line
                     params=process("[ ]%[ ]", param_list);
-                } else if(index==19){
-                    ;
+                } else if(index==19){       // draw cicle
+                    params=process("[ ]% `", param_list);
                 } else if(index==20){       // draw text
                     params=process("''%[ ]", param_list);
-                } else if(index==21){
-                    ;
+                } else if(index==21){       // draw function
+                    params=process("  `", param_list);
                 } else if(index==22){       // create canvas
                     params=process("[ ]", param_list);
                     image_name[0]='\0';
@@ -155,8 +192,6 @@ int main(int argc, char const *argv[])
                     strcpy(r, (char*)&params[0][0]);
                     strcpy(g, (char*)&params[1][0]);
                     strcpy(b, (char*)&params[2][0]);
-                } else{                     // ERR: no such a command
-                    exit(1);
                 }
 
                 // preparing to call execvp
@@ -168,6 +203,7 @@ int main(int argc, char const *argv[])
                     args[i+1]=(char*)&(params[i-1][0]);
                 }
                 unsigned in=2+params.size();
+                // args[in++]=(char*)filler;
                 args[in++]=(char*)r;
                 args[in++]=(char*)g;
                 args[in++]=(char*)b;
@@ -185,8 +221,8 @@ int main(int argc, char const *argv[])
                 int why;
                 wait(&why);
                 int stat=WEXITSTATUS(why);
-                if(stat==1 || STPmode) proc=false;
-                break;
+                if(STPmode) proc=false;
+                if(stat==1) cout<<"Visit the wiki of commands.\n";
             }
         }
     }
@@ -219,4 +255,44 @@ vector<string> process(const std::string& proc, const std::string& text){
     }
 
     return str;
+}
+
+cmd_t get_help(const std::string& command){
+    cmd_t index=-1;
+    double similarity[25];
+    unsigned n_same;
+    double max=0.;
+
+    for(unsigned i=0;i<25;++i){
+        n_same=0;
+        similarity[i]=0.;
+        for(unsigned j=0;j<commands[i].size();++j){
+            for(unsigned t=0;t<command.size();++t){
+                if(command[t]==commands[i][j]) ++n_same;
+            }
+        }
+        similarity[i]=(double)n_same;
+        if(max<similarity[i]){
+            max=similarity[i];
+            index=i;
+        }
+    }
+
+    return index;
+}
+
+size_t matched_length(const std::string& cmd, const std::string& command){
+    size_t length=0;
+    size_t max_length=0;
+    // string curr_cmd=cmd.substr();
+
+    for(unsigned i=0;i<command.length;++i){
+        for(unsigned j=0;;++j){
+            for(unsigned t=0;;++t){
+                ;
+            }
+        }
+    }
+
+    return max_length;
 }

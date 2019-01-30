@@ -6,22 +6,15 @@
 #define STR2LEN(x) atoi(x)
 #define STR2POS(x,y) Position2D(STR2LEN(x),STR2LEN(y))
 
-#define USAGE_INFO_ERROR Exception("\
-Appropriate usage : [options] [--] [parameters] \
-Options : \n\
--s [scaling factor] : scale by [scaling factor]\n\
--r [angle]          : rotate by [angle]\n\
-\
-", Info)
-
 using namespace std;
 
 extern int input(int argc, char** argv);
-void check(int argc, char** argv);
 
 /*
 argv[1] - the command index
 argv[2] ... argv[argc-7] - the command parameters
+argv[argc-9] argv[argc-8] - the maxX and maxY parameters
+argv[argc-7] - the fill parameter with bool values of 0/1
 argv[argc-6] ... argv[argc-4] - the color parameter given with unsigned r, g and b
 argv[argc-3] - the thickness parameter given with unsigned t
 argv[argc-2] - the magnify parameter given with double f
@@ -30,6 +23,8 @@ argv[argc-1] - the image name given with string
 
 int main(int argc, char *argv[])
 {
+    position_t maxX=STR2LEN(argv[argc-9]), maxY=STR2LEN(argv[argc-8]);
+    bool fill=STR2LEN(argv[argc-7]);
     Color color(atoi(argv[argc-4]), atoi(argv[argc-5]), atoi(argv[argc-6]));
     thickness_t thickness=atoi(argv[argc-3]);
     unsigned magnify=atof(argv[argc-2]);
@@ -46,9 +41,10 @@ int main(int argc, char *argv[])
     if(strcmp(argv[1], "-0")==0){               // quit
         ;   // nothing to do here
     } else if(strcmp(argv[1], "-1")==0){        // remove
-        ;
+        image.remove();
     } else if(strcmp(argv[1], "-2")==0){        // detect borders
         ;   // isn't prepared
+        image.detect_borders();
     } else if(strcmp(argv[1], "-3")==0){        // undo
         ;   // isn't prepared
     } else if(strcmp(argv[1], "-4")==0){        // redo
@@ -69,8 +65,10 @@ int main(int argc, char *argv[])
         image.crop(STR2LEN(argv[2]), 0);
     } else if(strcmp(argv[1], "-12")==0){       // rotate
         ;   // isn't prepared
+        image.rotate(atof(argv[2]));
     } else if(strcmp(argv[1], "-13")==0){       // draw point
         ;   // isn't prepared
+        image.draw_point(STR2POS(argv[2],argv[3]), color, thickness);
     } else if(strcmp(argv[1], "-14")==0){       // set thickness
         ;   // nothing to do here
     } else if(strcmp(argv[1], "-15")==0){       // set fill
@@ -88,46 +86,26 @@ int main(int argc, char *argv[])
         image.draw_text(argv[2], STR2POS(argv[3],argv[4]), magnify, color, thickness);
     } else if(strcmp(argv[1], "-21")==0){       // draw function
         ;   // isn't prepared
+        image.draw_function(argv[3], color, thickness);
     } else if(strcmp(argv[1], "-22")==0){       // create canvas
         image=BMP::blank(STR2LEN(argv[2]), STR2LEN(argv[3]), color);
     } else if(strcmp(argv[1], "-23")==0){       // draw triangle
         image.draw(vector<Position2D>{STR2POS(argv[2],argv[3]), STR2POS(argv[4],argv[5]), STR2POS(argv[6],argv[7]), STR2POS(argv[2],argv[3])}, color, thickness);
     } else if(strcmp(argv[1], "-24")==0){       // set color
         ;   // nothing to do here
+    } else if(strcmp(argv[1], "-27")==0){
+        cout<<"\nImage name : "<<image_name<<'\n';
+        cout<<"Width x Height : "<<image.info().width_<<" x "<<0xffffffff-image.info().height_+1<<'\n';
+        cout<<"Bytes : "<<(double)image.info().file_size_/1000000<<" MB\n";
+        cout<<"Virtual Width x Height : "<<maxX<<" x "<<maxY<<'\n';
+        cout<<"Color : "<<atoi(argv[argc-6])<<' '<<atoi(argv[argc-5])<<' '<<atoi(argv[argc-4])<<'\n';
+        cout<<"Thickness : "<<thickness<<'\n';
+        cout<<"Magnify : "<<magnify<<'\n';
+        cout<<"Fill : "<<fill<<"\n\n";
+        return 0;
     }
     
     image.save(image_name);
 
     return 0;
-}
-
-void check(int argc, char** argv){
-    if(argc>14){
-        throw Exception("Appropriate usage : ", Light);
-    }
-    
-    // char *c_value=nullptr, *r_value=nullptr;
-    char opt;
-    opterr=0;
-    while((opt=getopt(argc,argv,"c:r:s"))!=-1){
-        
-        switch (opt)
-        {
-            case 'c':
-                cout<<"c selected\n";
-                break;
-        
-            case 'r':
-                cout<<"r selected\n";
-                break;
-
-            case 's':
-                cout<<"s selected\n";
-                break;
-
-            default:
-                throw USAGE_INFO_ERROR;
-                break;
-        }
-    }
 }

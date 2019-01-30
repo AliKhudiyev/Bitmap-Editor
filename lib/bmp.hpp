@@ -28,6 +28,10 @@ class BMP{
 
     void set_color(const Color& color);
     void set_thickness(const thickness_t thickness);
+    void set_fill(bool fill);
+    const BMP_Info& info() const;
+    const Color& get_color() const;
+    thickness_t get_thickness() const;
 
     static BMP blank(unsigned width, unsigned height, const Color& color=COLOR::White);
     BMP& draw_point(const Position2D& position, const Color& color=def_color, const thickness_t thickness=def_thick);

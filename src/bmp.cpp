@@ -16,6 +16,22 @@ void BMP::set_thickness(const thickness_t thickness){
     def_thick=thickness;
 }
 
+void BMP::set_fill(bool fill){
+    ;
+}
+
+const BMP_Info& BMP::info() const{
+    return info_;
+}
+
+const Color& BMP::get_color() const{
+    return def_color;
+}
+
+thickness_t BMP::get_thickness() const{
+    return def_thick;
+}
+
 BMP BMP::blank(unsigned width, unsigned height, const Color& color){
     BMP image;
 

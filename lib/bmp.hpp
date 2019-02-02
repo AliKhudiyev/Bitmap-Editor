@@ -14,6 +14,7 @@
 class BMP{
     static Color def_color;
     static thickness_t def_thick;
+    static bool fill;
 
     private:
     std::string name_;
@@ -49,7 +50,7 @@ class BMP{
     BMP& draw_shape(const Shape& shape, const Color& color=def_color, const thickness_t thickness=def_thick);
     BMP& draw(const std::vector<Position2D>& positions, const Color& color=def_color, const thickness_t thickness=def_thick);
     BMP& draw_text(const std::string& text, const Position2D& position, double magnify=1, const Color& color=def_color, const thickness_t thickness=def_thick);
-    BMP& draw_function(const std::string& function, const Color& color=def_color, const thickness_t thickness=def_thick);
+    BMP& draw_function(const std::string& function, double beg_x, double end_x, const Color& color=def_color, const thickness_t thickness=def_thick);
 
     BMP& detect_borders();
     BMP& scale(double on_axis=1);

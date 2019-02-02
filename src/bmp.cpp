@@ -5,8 +5,11 @@
 #include<cmath>
 #include<iostream>
 
+// extern double calculate(const std::string& function, double x);
+
 Color BMP::def_color=COLOR::Black;
 thickness_t BMP::def_thick=1;
+bool BMP::fill=false;
 
 void BMP::set_color(const Color& color){
     def_color=color;
@@ -58,7 +61,8 @@ BMP BMP::blank(unsigned width, unsigned height, const Color& color){
 }
 
 BMP& BMP::draw_point(const Position2D& position, const Color& color, const thickness_t thickness){
-    // draw_circle(position, 1);
+    unsigned width=thickness-1;
+    draw_line(position, Position2D(position.x()+width, position.y()), color, thickness);
     return *this;
 }
 
@@ -170,8 +174,13 @@ BMP& BMP::draw_text(const std::string& text, const Position2D& position, double 
     return *this;
 }
 
-BMP& BMP::draw_function(const std::string& function, const Color& color, const thickness_t thickness){
-    ;
+BMP& BMP::draw_function(const std::string& function, double beg_x, double end_x, const Color& color, const thickness_t thickness){
+    position_t y1=0, y2=0;
+    for(;beg_x<end_x-1;++beg_x){
+        // y1=calculate(function, beg_x);
+        // y2=calculate(function, beg_x+1);
+        draw_line(Position2D(beg_x, y1), Position2D(beg_x+1, y2), color, thickness);
+    }
     return *this;
 }
 
@@ -287,7 +296,7 @@ void BMP::read(const std::string& file_name){
     image.seekg(0, image.beg);
     image.read((char*)&header_[0], info_.offset_size_);
     image.read((char*)&table_.color_[0], info_.image_size_);
-    table_.n_padding_=(4-((info_.width_*info_.bits_per_pixel_/4)%4))%4;
+    table_.n_padding_=(4-((info_.width_*Bpp)%4))%4;
 
     update();
 

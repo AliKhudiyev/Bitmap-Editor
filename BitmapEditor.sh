@@ -7,7 +7,7 @@ echo "Current available version : 1.0."
 echo "Written by : Ali Khudiyev"
 echo "Simple terminal based image editor"
 echo "Needed bash/shell version : Bash"
-echo "25 user-frinedly commands"
+echo "27 user-frinedly commands"
 echo "2 processing modes : S.T.P. and M.T.P."
 echo "Various error handlings and brief information for each of them"
 echo

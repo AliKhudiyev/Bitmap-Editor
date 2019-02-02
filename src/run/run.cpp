@@ -19,10 +19,10 @@ static char* thickness;
 static char* magnify;
 static char* filler;
 static char* image_name;
-
+static int* exit_stat;
 static bool* is_in_commander;
 
-const string commands[28]{
+const string commands[27]{
     "quit",
     "remove",
     "detect borders",
@@ -53,7 +53,6 @@ const string commands[28]{
     "set color",
 
     "set coordinates",
-    "set fill",
     "info"
 };
 
@@ -73,7 +72,7 @@ int main(int argc, char const *argv[])
     magnify=(char*)mmap(NULL, sizeof(char), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
     filler=(char*)mmap(NULL, sizeof(char), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
     image_name=(char*)mmap(NULL, MAX_N_CHARS*sizeof(char), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
-
+    exit_stat=(int*)mmap(NULL, sizeof(int), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
     is_in_commander=(bool*)mmap(NULL, sizeof(bool), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 
     cout<<"The program has been started.\n";
@@ -87,10 +86,9 @@ int main(int argc, char const *argv[])
     *magnify='1';
     *filler='0';
     image_name[0]='\0';
-
+    *exit_stat=0;
     *is_in_commander=false;
     bool STPmode=atoi(argv[1]);
-    std::cout<<"STP mode : "<<STPmode<<'\n';
     bool proc=true;
 
     while(proc){
@@ -103,6 +101,7 @@ int main(int argc, char const *argv[])
             {
                 string command;
                 cmd_t index=-1;
+                *exit_stat=0;
 
                 cout<<"Command : ";
                 getline(cin, command);
@@ -146,6 +145,7 @@ int main(int argc, char const *argv[])
                     strcpy(b, "255");
                     strcpy(thickness, "1");
                     strcpy(magnify, "1");
+                    *exit_stat=1;
                 } else if(index==2){        // detect borders
                     ;
                 } else if(index==3){        // undo
@@ -197,6 +197,7 @@ int main(int argc, char const *argv[])
                 } else if(index==22){       // create canvas
                     params=process("[ ]", param_list);
                     image_name[0]='\0';
+                    *exit_stat=2;
                 } else if(index==23){       // draw triangle
                     params=process("[ ]%[ ]%[ ]", param_list);
                 } else if(index==24){       // set color
@@ -205,14 +206,10 @@ int main(int argc, char const *argv[])
                     strcpy(g, (char*)&params[1][0]);
                     strcpy(b, (char*)&params[2][0]);
                     exit(0);
-                } else if(index==25){
+                } else if(index==25){       // set coordinates
                     params=process("[ ]", param_list);
                     strcpy(maxX, (char*)&params[0][0]);
                     strcpy(maxY, (char*)&params[1][0]);
-                    exit(0);
-                } else if(index==26){
-                    params=process(" `", param_list);
-                    strcpy(filler, (char*)&params[0][0]);
                     exit(0);
                 }
 
@@ -235,9 +232,8 @@ int main(int argc, char const *argv[])
                 args[i++]=magnify;
                 args[i++]=image_name;
                 args[i]=(char*)NULL;
-
+                
                 execvp(args[0], args);
-                exit(0);
             }
             
             default:
@@ -247,6 +243,8 @@ int main(int argc, char const *argv[])
                 int stat=WEXITSTATUS(why);
                 if(stat==1 || STPmode) proc=false;
                 if(stat==2) cout<<"Visit the wiki of commands.\n";
+                else if(*exit_stat==1) strcpy(image_name, "");
+                else if(*exit_stat==2) strcpy(image_name, "__tmp_img_01.bmp");
             }
         }
     }

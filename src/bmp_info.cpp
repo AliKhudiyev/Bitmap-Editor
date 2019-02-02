@@ -40,7 +40,13 @@ std::vector<unsigned char> BMP_Info::byte_vector(unsigned char type, unsigned n_
 }
 
 void BMP_Info::clear(){
-    ;
+    signature_=0;
+    file_size_=0;
+    offset_size_=0;
+    header_size_=0;
+    width_=0;
+    height_=0;
+    image_size_=0;
 }
 
 void BMP_Info::Info() const{
